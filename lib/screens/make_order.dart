@@ -46,137 +46,123 @@ class _MakeOrderState extends State<MakeOrder> {
       appBar: AppBar(
         backgroundColor: mainBlue,
         automaticallyImplyLeading: true,
-        title: Text('Add New Pet',
-          style: TextStyle(
-            color: mainred,
-          ),),
+        title: MyText('Make Order',
+        color: mainred,
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+        ),
         centerTitle: true,
       ),
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Container(
-            padding: EdgeInsets.all(30),
+            padding: EdgeInsets.all(10),
             child: Center(
               child: Column(
                 children: [
-
-                  SizedBox(height: 20,),
-                  MyButton(
-                    height: 40,
-                    icon: Icons.attach_file,
-                    color: mainred,
-                    child: MyText (
-                      'Select Pet Image',
-                      color: white,
-                      fontSize: 18,
+                  Container(
+                    height: 300,
+                    width: double.infinity,
+                    child: Image.network(widget.petPicture,
+                      fit: BoxFit.fill,
                     ),
-                    onTap: data.selectFile,
                   ),
 
                   SizedBox(height: 8),
-                  Text(
-                    'fileName',
-                    style: TextStyle(fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: mainBlue),
+
+                  Container(
+                    width: double.infinity,
+                    child:  MyText(widget.breed,
+                      textAlign: TextAlign.center,
+                      fontSize: 30,
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
+
                   SizedBox(height: 20),
-                  // data.task != null ? buildUploadStatus(data.task!) : Container(
-                  //   color: white,
-                  // ),
-                  SizedBox(height: 20),
 
-                  InputField(
-                    inputController: _breedTextController,
-                    isPassword: false,
-                    hintText: 'Pet Breed',
-                    hasSuffixIcon: false,
-                    keyBoardType: TextInputType.emailAddress,
+                Container(
+                  width: double.infinity,
+                  child: MyText('Age: ${widget.age}',
+                    fontSize: 22,
+                    textAlign: TextAlign.start,
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.w400,
                   ),
+                ),
 
                   SizedBox(height: 20,),
 
-                  InputField(
-                    inputController: _ageTextController,
-                    isPassword: false,
-                    hintText: 'Pet Age',
-                    hasSuffixIcon: false,
-                    keyBoardType: TextInputType.text,
-
+                  Container(
+                    width: double.infinity,
+                    child: MyText('Price: ${widget.cost}',
+                      fontSize: 22,
+                      textAlign: TextAlign.start,
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   SizedBox(height: 20,),
 
-                  InputField(
-                    inputController: _costTextController,
-                    isPassword: false,
-                    hintText: 'Pet Price',
-                    hasSuffixIcon: false,
-                    keyBoardType: TextInputType.text,
-
+                  Container(
+                    width: double.infinity,
+                    child: MyText(widget.isAvailable >= 1 ? 'Available' : 'Not Available',
+                      fontSize: 22,
+                      textAlign: TextAlign.start,
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                  SizedBox(height: 20,),
-
-                  InputField(
-                    inputController: _isAvailableTextController,
-                    isPassword: false,
-                    hintText: 'Number of available Pets',
-                    hasSuffixIcon: false,
-                    keyBoardType: TextInputType.text,
-
-                  ),
-
-                  SizedBox(height: 100,),
+                  SizedBox(height: 40,),
 
                   MyButton(
                     color: mainred,
                     height: 50,
                     child: MyText (
-                      'Upload',
+                      'Make Order',
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
-                    icon: Icons.cloud_upload_outlined,
-                    // onTap: () async {
-                    //   if (data.file == null) return;
-                    //
-                    //   final fileName = basename(data.file!.path);
-                    //   final destination = 'files/$fileName';
-                    //
-                    //   data.task = FirebaseApi.uploadFile(destination, data.file!);
-                    //   setState(() {});
-                    //
-                    //   if (data.task == null) return;
-                    //
-                    //   final snapshot = await data.task!.whenComplete(() {});
-                    //   data.imageUrl = await snapshot.ref.getDownloadURL();
-                    //
-                    //   print('Download-Link: ${data.imageUrl}');
-                    //
-                    //   if (data.imageUrl != null) {
-                    //     try {
-                    //       await FirebaseFirestore.instance.collection('Users')
-                    //           .doc(_titleTextController.text)
-                    //           .set({
-                    //         'movie-title': _titleTextController.text,
-                    //         'movie-description': _descriptionTextController
-                    //             .text,
-                    //         'urlDownload': data.imageUrl,
-                    //       })
-                    //           .then((value) {
-                    //         setState(() {
-                    //           isLoading = false;
-                    //         });
-                    //         Navigator.pop(context);
-                    //       });
-                    //     } catch (e, s) {
-                    //       print(e);
-                    //       print(s);
-                    //     }
-                    //   }
-                    // }
+                    //icon: Icons.,
+                    onTap: () async {
+                      isLoading = true;
+                      if (mounted)
+                        setState(() {});
+
+                      Duration waitTime = Duration(seconds: 4);
+                      Future.delayed(waitTime, (){
+                        isLoading = false;
+                        if (mounted)
+                          setState(() {});
+                      });
+
+                      if (widget.isAvailable >= 1) {
+                        try {
+                          await data.putMakeOrder(widget.sId)
+                              .then((value) {
+                         if (data.putOrderResponse.statusCode == 200){
+                           widget.isAvailable = widget.isAvailable - 1;
+                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                             content: const Text(
+                                 'Purchase Completed'),
+                             duration: const Duration(seconds: 5),),);
+                           Navigator.pop(context);
+                         }
+                          });
+                        } catch (e, s) {
+                          print(e);
+                          print(s);
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text(
+                              'Order can not be completed'),
+                          duration: const Duration(seconds: 5),),);
+                        Navigator.pop(context);
+                      }
+                    }
                   ),
-
-
                 ],
               ),
             )

@@ -30,35 +30,45 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+
         appBar: AppBar(
           automaticallyImplyLeading: true,
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              InkWell(
-                child: PopupMenuButton(
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                          child: Row(
-                            children: [
-                              Icon(Icons.account_circle,
-                                color: Colors.black,),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text('User')
-                            ],
-                          )),
-                      PopupMenuItem(
-                          child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => addNewPet()));
-                              },
-                              child: const Text('Add New Movie'))),
-                    ]),
+              MyText(
+            'BiggieVet',
+                color: white,
+                fontSize: 27,
+                fontWeight: FontWeight.bold,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 80),
+                child: InkWell(
+                  child: PopupMenuButton(
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                            child: Row(
+                              children: [
+                                Icon(Icons.account_circle,
+                                  color: Colors.black,),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text('User')
+                              ],
+                            )),
+                        PopupMenuItem(
+                            child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => addNewPet()));
+                                },
+                                child: const Text('Add New Movie'))),
+                      ]),
+                ),
               ),
             ],
           ),

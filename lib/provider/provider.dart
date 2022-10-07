@@ -16,6 +16,8 @@ class ProviderClass extends ChangeNotifier {
   File? file;
   String? urlDownload;
   bool isLoading = false;
+  var putResponse;
+  var putOrderResponse;
 
   Future selectFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
@@ -124,12 +126,14 @@ class ProviderClass extends ChangeNotifier {
       'Authorization': 'Bearer $token'
     };
 
-    var url = Uri.parse('https://biggievet.herokuapp.com/api/pet/update/' + str );
+    var url = Uri.parse('https://biggievet.herokuapp.com/api/pet/update/' + str);
 
     try {
-      var response = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
-      print('Response status: ${response.statusCode}');
-      // notifyListeners();
+      putResponse = await http.put(url, headers: requestHeaders, body: jsonEncode(payload));
+      print(url);
+      print('Response status: ${putResponse.statusCode}');
+       notifyListeners();
+
     }catch(e,s)
     {
       print(e);
@@ -139,5 +143,30 @@ class ProviderClass extends ChangeNotifier {
 
   }
 
+  Future<void> putMakeOrder(String str) async {
+    final storage = await SharedPreferences.getInstance();
+    token = await storage.getString('token');
+    notifyListeners();
 
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': '*/*',
+      'Authorization': 'Bearer $token'
+    };
+
+    var url = Uri.parse('https://biggievet.herokuapp.com/api/user/order/' + str);
+
+    try {
+      putOrderResponse = await http.put(url, headers: requestHeaders,);
+      print(url);
+      print('Response status: ${putOrderResponse.statusCode}');
+      notifyListeners();
+    }catch(e,s)
+    {
+      print(e);
+      print(s);
+    }
+
+
+  }
 }

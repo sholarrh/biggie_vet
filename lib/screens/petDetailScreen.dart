@@ -172,15 +172,14 @@ class _PetDetailState extends State<PetDetail> {
                     height: 50,
                     color: mainred,
                     onTap: ()async {
-                      try {
                         isLoading = true;
                         if (mounted)
                           setState(() {});
 
                         var payload = {
-                          "age": _ageTextController.text,
-                           "cost": _costTextController.text,
-                          "isAvailable": _isAvailableTextController.text
+                          "age": '10 weeks',
+                           "cost": '\$400',
+                          "isAvailable": '10'
                         };
 
                         Duration waitTime = Duration(seconds: 4);
@@ -190,10 +189,12 @@ class _PetDetailState extends State<PetDetail> {
                             setState(() {});
 
                         });
-
-                        await data.putUpdate(payload, widget.sId)
+                        try {
+                          await data.putUpdate(payload, widget.sId)
                             .then((value) {
-                          Navigator.pop(context);
+                              if (data.putResponse.statusCode == 200) {
+                                Navigator.pop(context);
+                              }
                         });
                       } catch (e, s) {
                         print(e);
