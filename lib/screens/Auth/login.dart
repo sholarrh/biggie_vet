@@ -31,8 +31,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isLoading = false;
 
-
-
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context);
@@ -44,12 +42,6 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.only(left: 18, right: 18,),
             child: Column(
               children: [
-
-                // Padding(
-                //   padding: const EdgeInsets.only(top: 70),
-                //   child:
-                //   Image(image: AssetImage('assets/images/OOPL-Cinemas-logo-white-website-logo-web.png')),
-                // ),
 
                 Padding(
                   padding: const EdgeInsets.only(top: 80.0),
@@ -68,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                   key: _formkey,
                   child: Column(
                     children: [
-                      SizedBox(height: 40,),
+                      const SizedBox(height: 40,),
 
                       InputField(
                         inputController: _emailTextController,
@@ -76,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                         hintText: 'Email Address',
                         hasSuffixIcon: false,
                         keyBoardType: TextInputType.emailAddress,
-                        prefixIcon: Icon(Icons.person_outline),
+                        prefixIcon: const Icon(Icons.person_outline),
                         validator: validateEmail,),
 
                       SizedBox(height: 40,),
@@ -87,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                         hintText: 'Password',
                         hasSuffixIcon: true,
                         keyBoardType: TextInputType.text,
-                        prefixIcon: Icon(Icons.lock_outlined),
+                        prefixIcon: const Icon(Icons.lock_outlined),
                         validator: validatePassword,
                       ),
 
@@ -103,7 +95,9 @@ class _LoginPageState extends State<LoginPage> {
                             setState(() {});
                             Duration waitTime = Duration(seconds: 4);
                             Future.delayed(waitTime, (){
-                              isLoading = false;
+                              if (mounted) {
+                                isLoading = false;
+                              }
                               setState(() {});
                             });
 
@@ -114,14 +108,20 @@ class _LoginPageState extends State<LoginPage> {
 
                               await data.postLogin(payload, _emailTextController.text)
                                   .then((value) {
+                                    if (data.postLoginResponse.statusCode == 200){
                                     Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => HomePage()));
+                                    MaterialPageRoute(builder: (context) => HomePage()));
+                                    }else {
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                        content: Text(
+                                            'There is an error'),
+                                        duration: Duration(seconds: 5),),);
+                                    }
                                   });
                               }catch(e,s){
                               print(e);
                               print(s);
                             }
-
                           }
                         },
                         child: isLoading == false ? MyText(
@@ -129,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: white,
                           fontWeight: FontWeight.w700,
                           fontSize: 20,)
-                            : Center(
+                            : const Center(
                               child: CircularProgressIndicator(
                                 color: mainBlue,
                           ),
@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 60,),
+                  padding: const EdgeInsets.only(top: 60,),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -151,9 +151,8 @@ class _LoginPageState extends State<LoginPage> {
                       InkWell(
                         onTap: () {
                           Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Register()));
+                              MaterialPageRoute(builder: (context) => const Register()));
                         },
-
                         child: MyText('Sign Up',
                           color: mainBlue,
                           fontWeight: FontWeight.w600,

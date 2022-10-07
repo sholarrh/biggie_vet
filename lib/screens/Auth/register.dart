@@ -2,7 +2,6 @@
 import 'package:biggie_vet/widgets/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../provider/provider.dart';
 import '../../utils/app_colors.dart';
@@ -47,17 +46,19 @@ class _RegisterState extends State<Register> {
             padding: const EdgeInsets.only(left: 18, right: 18),
             child: Column(
               children: [
-                SizedBox(height: 30,),
+                const SizedBox(height: 30,),
                 Align(
                   alignment: Alignment.topLeft,
                   child: IconButton(
                       onPressed: (){
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.arrow_back,
+                      icon: const Icon(Icons.arrow_back,
                         color: white,)),
                 ),
-                SizedBox(height: 70,),
+
+                const SizedBox(height: 70,),
+
                 Align(
                   alignment: Alignment.topLeft,
                   child: MyText(
@@ -68,6 +69,7 @@ class _RegisterState extends State<Register> {
                     color: white,
                   ),
                 ),
+
                 const SizedBox(
                   height: 40,
                 ),
@@ -111,7 +113,8 @@ class _RegisterState extends State<Register> {
                         prefixIcon: const Icon(Icons.email_outlined),
                         validator: validateEmail,
                       ),
-                      SizedBox(
+
+                      const SizedBox(
                         height: 40,
                       ),
 
@@ -152,7 +155,7 @@ class _RegisterState extends State<Register> {
                         color: white,
                         fontWeight: FontWeight.w700,
                         fontSize: 20,
-                      ):  Center(
+                      ):  const Center(
                         child: CircularProgressIndicator(
                           color: mainBlue,
                         ),
@@ -162,18 +165,15 @@ class _RegisterState extends State<Register> {
                           isLoading = true;
                           setState(() {
                           });
-                          
-                          // final storage = await SharedPreferences.getInstance();
-                          // await storage.setString('fullname', _fullnameTextController.text);
-                          // setState(() {
-                          // });
 
-
-                          Duration waitTime = Duration(seconds: 4);
+                          Duration waitTime = const Duration(seconds: 4);
                           Future.delayed(waitTime, (){
-                            isLoading = false;
+                            if (mounted) {
+                              isLoading = false;
+                            }
                             setState(() {});
                           });
+
                           try {
                             var payload = {"name": _fullnameTextController.text,
                                             "phoneNumber": _phoneNumberTextController.text,
@@ -182,7 +182,18 @@ class _RegisterState extends State<Register> {
                             await data.postRegister(payload)
                             .then((value)
                             {
-                              Navigator.pop(context);} );
+                              if (data.postRegisterResponse.statusCode == 200
+                                  || data.postRegisterResponse.statusCode == 201
+                              ){
+                                Navigator.pop(context);
+                              }else {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  content: Text(
+                                      'There is an error'),
+                                  duration: Duration(seconds: 5),),);
+                              }
+                            }
+                            );
                           }catch (e, s) {
                             print(e);
                             print(s);

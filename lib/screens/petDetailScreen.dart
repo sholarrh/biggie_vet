@@ -161,7 +161,6 @@ class _PetDetailState extends State<PetDetail> {
                     hintText: 'Number of available Pets',
                     hasSuffixIcon: false,
                     keyBoardType: TextInputType.text,
-
                   ),
 
                   SizedBox(
@@ -177,9 +176,9 @@ class _PetDetailState extends State<PetDetail> {
                           setState(() {});
 
                         var payload = {
-                          "age": '10 weeks',
-                           "cost": '\$400',
-                          "isAvailable": '10'
+                          "age": '4 weeks',
+                          //  "cost": '\$400',
+                          // "isAvailable": '10'
                         };
 
                         Duration waitTime = Duration(seconds: 4);
@@ -187,13 +186,18 @@ class _PetDetailState extends State<PetDetail> {
                           isLoading = false;
                           if (mounted)
                             setState(() {});
-
                         });
+
                         try {
                           await data.putUpdate(payload, widget.sId)
                             .then((value) {
                               if (data.putResponse.statusCode == 200) {
                                 Navigator.pop(context);
+                              }else{
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  content: Text(
+                                      'There is an error'),
+                                  duration: Duration(seconds: 5),),);
                               }
                         });
                       } catch (e, s) {

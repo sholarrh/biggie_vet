@@ -18,7 +18,7 @@ class addNewPet extends StatefulWidget {
 
 class _addNewPetState extends State<addNewPet> {
 
-  bool isLoading = false;
+
   final TextEditingController _breedTextController = TextEditingController();
   final TextEditingController _ageTextController = TextEditingController();
   final TextEditingController _costTextController = TextEditingController();
@@ -45,7 +45,6 @@ class _addNewPetState extends State<addNewPet> {
             child: Center(
               child: Column(
                 children: [
-
                   SizedBox(height: 20,),
                   MyButton(
                     height: 40,
@@ -59,18 +58,15 @@ class _addNewPetState extends State<addNewPet> {
                     onTap: data.selectFile,
                   ),
 
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
+
                   Text(
-                    'fileName',
+                    data.file.toString(),
                     style: TextStyle(fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: mainBlue),
                   ),
-                  SizedBox(height: 20),
-                  // data.task != null ? buildUploadStatus(data.task!) : Container(
-                  //   color: white,
-                  // ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   InputField(
                     inputController: _breedTextController,
@@ -80,7 +76,7 @@ class _addNewPetState extends State<addNewPet> {
                     keyBoardType: TextInputType.emailAddress,
                   ),
 
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
 
                   InputField(
                     inputController: _ageTextController,
@@ -110,58 +106,65 @@ class _addNewPetState extends State<addNewPet> {
 
                   ),
 
-                  SizedBox(height: 100,),
+                  const SizedBox(height: 100,),
 
                   MyButton(
                       color: mainred,
                       height: 50,
-                      child: MyText (
-                        'Upload',
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      ),
                       icon: Icons.cloud_upload_outlined,
-                      // onTap: () async {
-                      //   if (data.file == null) return;
-                      //
-                      //   final fileName = basename(data.file!.path);
-                      //   final destination = 'files/$fileName';
-                      //
-                      //   data.task = FirebaseApi.uploadFile(destination, data.file!);
-                      //   setState(() {});
-                      //
-                      //   if (data.task == null) return;
-                      //
-                      //   final snapshot = await data.task!.whenComplete(() {});
-                      //   data.imageUrl = await snapshot.ref.getDownloadURL();
-                      //
-                      //   print('Download-Link: ${data.imageUrl}');
-                      //
-                      //   if (data.imageUrl != null) {
-                      //     try {
-                      //       await FirebaseFirestore.instance.collection('Users')
-                      //           .doc(_titleTextController.text)
-                      //           .set({
-                      //         'movie-title': _titleTextController.text,
-                      //         'movie-description': _descriptionTextController
-                      //             .text,
-                      //         'urlDownload': data.imageUrl,
-                      //       })
-                      //           .then((value) {
-                      //         setState(() {
-                      //           isLoading = false;
-                      //         });
-                      //         Navigator.pop(context);
-                      //       });
-                      //     } catch (e, s) {
-                      //       print(e);
-                      //       print(s);
-                      //     }
-                      //   }
-                      // }
+                      onTap: () async {
+                        data.isLoading = true;
+                        if (mounted)
+                          setState(() {});
+
+                        var payload = {
+                          "age": '4 weeks',
+                            "cost": '\$400',
+                           "isAvailable": '10',
+                          'breed': 'Doberman',
+                          'petPicture': data.file,
+                        };
+
+                        Duration waitTime = Duration(seconds: 4);
+                        Future.delayed(waitTime, (){
+                          data.isLoading = false;
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        });
+                        try{
+                          await data.postNewPet(payload)
+                              .then((value) {
+                            if (data.postNewPetResponse.statusCode == 200 ||
+                                data.postNewPetResponse.statusCode == 201) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                content: Text(
+                                    'Pet has been Added'),
+                                duration: Duration(seconds: 5),),);
+                              Navigator.pop(context);
+                            }else{
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                content: Text(
+                                    'There is an error'),
+                                duration: Duration(seconds: 5),),);
+                            }
+                          });
+                        }catch(e,s){
+                          print(e);
+                          print(s);
+                        }
+                      },
+                      child: data.isLoading == false ? MyText(
+                        'Add',
+                        color: white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,)
+                          : const Center(
+                           child: CircularProgressIndicator(
+                          color: mainBlue,
+                        ),
+                      )
                   ),
-
-
                 ],
               ),
             )
@@ -169,25 +172,4 @@ class _addNewPetState extends State<addNewPet> {
       ),
     );
   }
-
-  // Widget buildUploadStatus(UploadTask task) =>
-  //     StreamBuilder<TaskSnapshot>(
-  //       stream: task.snapshotEvents,
-  //       builder: (context, snapshot) {
-  //         if (snapshot.hasData) {
-  //           final snap = snapshot.data!;
-  //           final progress = snap.bytesTransferred / snap.totalBytes;
-  //           final percentage = (progress * 100).toStringAsFixed(2);
-  //
-  //           return Text(
-  //             '$percentage %',
-  //             style: TextStyle(fontSize: 20,
-  //               fontWeight: FontWeight.bold,
-  //               color: mainBlue,),
-  //           );
-  //         } else {
-  //           return Container();
-  //         }
-  //       },
-  //     );
 }

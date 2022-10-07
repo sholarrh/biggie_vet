@@ -13,11 +13,18 @@ import '../models/pet_model.dart';
 class ProviderClass extends ChangeNotifier {
   String? token;
   String? userEmail;
+  var postRegisterResponse;
+  var postLoginResponse;
+  var getResponse;
+  bool availablePets = false;
+  var putResponse;
+  var putOrderResponse;
+  var postNewPetResponse;
+
+
   File? file;
   String? urlDownload;
   bool isLoading = false;
-  var putResponse;
-  var putOrderResponse;
 
   Future selectFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
@@ -42,14 +49,14 @@ class ProviderClass extends ChangeNotifier {
       'Accept': '*/*',
     };
     try {
-      var response = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+       postRegisterResponse = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
+      print('Response status: ${postRegisterResponse.statusCode}');
+      print('Response body: ${postRegisterResponse.body}');
+      notifyListeners();
     } catch (e, s) {
       print(e);
       print(s);
     }
-    // print(await http.read(Uri.https('example.com', 'foobar.txt')));
   }
 
   Future<void> postLogin(Map<String, dynamic> payload, String email) async {
@@ -59,10 +66,11 @@ class ProviderClass extends ChangeNotifier {
       'Accept': '*/*',
     };
     try {
-      var response = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      var responseData = jsonDecode(response.body);
+      postLoginResponse = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
+      print('Response status: ${postLoginResponse.statusCode}');
+      print('Response body: ${postLoginResponse.body}');
+      notifyListeners();
+      var responseData = jsonDecode(postLoginResponse.body);
 
       final storage =  await SharedPreferences.getInstance();
       storage.setString('token', responseData['access_token']);
@@ -81,18 +89,17 @@ class ProviderClass extends ChangeNotifier {
     final storage = await SharedPreferences.getInstance();
     token = await storage.getString('token');
     notifyListeners();
-    //String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzM2VmMGQ2NWQ4YjEzNzQzY2NhN2MxYiIsImlhdCI6MTY2NTA4MDg1NywiZXhwIjoxNjY1MDg0NDU3fQ.1JZ5H69KvKDIifDxl7o_a_sG2A9q8oSr-w0s2X7A3lE';
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': '*/*',
       'Authorization': 'Bearer $token'
     };
     var url =Uri.parse('https://biggievet.herokuapp.com/api/user/pets');
-    var response = await http.get(url, headers: requestHeaders);
-    print('Response status: ${response.statusCode}');
-    print(jsonDecode(response.body));
+    getResponse = await http.get(url, headers: requestHeaders);
+    print('Response status: ${getResponse.statusCode}');
+    print(jsonDecode(getResponse.body));
 
-    var responsedata = getCLassModelFromJson(response.body);
+    var responsedata = getCLassModelFromJson(getResponse.body);
     print(responsedata.data!);
     notifyListeners();
     return responsedata;
@@ -122,14 +129,13 @@ class ProviderClass extends ChangeNotifier {
 
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
-      'Accept': '*/*',
       'Authorization': 'Bearer $token'
     };
 
     var url = Uri.parse('https://biggievet.herokuapp.com/api/pet/update/' + str);
 
     try {
-      putResponse = await http.put(url, headers: requestHeaders, body: jsonEncode(payload));
+      putResponse = await http.put(url, headers: requestHeaders, body: json.encode(payload));
       print(url);
       print('Response status: ${putResponse.statusCode}');
        notifyListeners();
@@ -139,8 +145,6 @@ class ProviderClass extends ChangeNotifier {
       print(e);
       print(s);
     }
-
-
   }
 
   Future<void> putMakeOrder(String str) async {
@@ -168,5 +172,27 @@ class ProviderClass extends ChangeNotifier {
     }
 
 
+  }
+
+  Future<void> postNewPet(Map<String, dynamic> payload,) async {
+    var url = Uri.parse('https://biggievet.herokuapp.com/api/pet/create');
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': '*/*',
+      'Authorization': 'Bearer $token'
+    };
+    try {
+      postNewPetResponse = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
+      print('Response status: ${postNewPetResponse.statusCode}');
+      print('Response body: ${postNewPetResponse.body}');
+      notifyListeners();
+      var responseData = jsonDecode(postNewPetResponse.body);
+
+      print(responseData);
+      notifyListeners();
+    } catch (e, s) {
+      print(e);
+      print(s);
+    }
   }
 }

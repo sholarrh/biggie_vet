@@ -1,6 +1,5 @@
 
-import 'package:biggie_vet/screens/petDetailScreen.dart';
-import 'package:biggie_vet/widgets/petCard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,9 +27,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<ProviderClass>(context);
     return SafeArea(
       child: Scaffold(
-
         appBar: AppBar(
           automaticallyImplyLeading: true,
           title: Row(
@@ -49,9 +48,10 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context) => [
                         PopupMenuItem(
                             child: Row(
-                              children: [
+                              children: const [
                                 Icon(Icons.account_circle,
                                   color: Colors.black,),
+
                                 SizedBox(
                                   width: 5,
                                 ),
@@ -64,9 +64,9 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => addNewPet()));
+                                          builder: (context) => const addNewPet()));
                                 },
-                                child: const Text('Add New Movie'))),
+                                child: const Text('Add New Pet'))),
                       ]),
                 ),
               ),
@@ -78,6 +78,12 @@ class _HomePageState extends State<HomePage> {
         SingleChildScrollView(
           child: Column(
             children: [
+            //   data.getResponse.isEmpty ?
+          //   Center(
+          //     child: CircularProgressIndicator(
+          //     color: mainBlue,
+          // ),
+          // ):
               AllPets(),
             ],
           ),
