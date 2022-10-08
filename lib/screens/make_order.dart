@@ -7,7 +7,7 @@ import '../provider/provider.dart';
 import '../utils/app_colors.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_text.dart';
-import '../widgets/my_text_form_field.dart';
+import 'homePage.dart';
 
 class MakeOrder extends StatefulWidget {
   String sId;
@@ -33,12 +33,6 @@ class MakeOrder extends StatefulWidget {
 
 class _MakeOrderState extends State<MakeOrder> {
 
-  bool isLoading = false;
-  final TextEditingController _breedTextController = TextEditingController();
-  final TextEditingController _ageTextController = TextEditingController();
-  final TextEditingController _costTextController = TextEditingController();
-  final TextEditingController _isAvailableTextController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context);
@@ -56,7 +50,7 @@ class _MakeOrderState extends State<MakeOrder> {
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Center(
               child: Column(
                 children: [
@@ -68,7 +62,7 @@ class _MakeOrderState extends State<MakeOrder> {
                     ),
                   ),
 
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
                   Container(
                     width: double.infinity,
@@ -80,7 +74,7 @@ class _MakeOrderState extends State<MakeOrder> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                 Container(
                   width: double.infinity,
@@ -92,7 +86,7 @@ class _MakeOrderState extends State<MakeOrder> {
                   ),
                 ),
 
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
 
                   Container(
                     width: double.infinity,
@@ -103,38 +97,34 @@ class _MakeOrderState extends State<MakeOrder> {
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
 
                   Container(
                     width: double.infinity,
-                    child: MyText(widget.isAvailable >= 1 ? 'Available' : 'Not Available',
+                    child: MyText(widget.isAvailable >= 1 ? '${widget.isAvailable} pieces left' : 'Not Available',
                       fontSize: 22,
                       textAlign: TextAlign.start,
                       color: Colors.blueAccent,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  SizedBox(height: 40,),
+                  const SizedBox(height: 40,),
 
                   MyButton(
                     color: mainred,
                     height: 50,
-                    child: MyText (
-                      'Make Order',
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    //icon: Icons.,
                     onTap: () async {
-                      isLoading = true;
-                      if (mounted)
+                      data.isLoading = true;
+                      if (mounted) {
                         setState(() {});
+                      }
 
-                      Duration waitTime = Duration(seconds: 4);
+                      Duration waitTime = const Duration(seconds: 4);
                       Future.delayed(waitTime, (){
-                        isLoading = false;
-                        if (mounted)
+                        data.isLoading = false;
+                        if (mounted) {
                           setState(() {});
+                        }
                       });
 
                       if (widget.isAvailable >= 1) {
@@ -143,11 +133,12 @@ class _MakeOrderState extends State<MakeOrder> {
                               .then((value) {
                          if (data.putOrderResponse.statusCode == 200){
                            widget.isAvailable = widget.isAvailable - 1;
-                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                             content: const Text(
+                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                             content: Text(
                                  'Purchase Completed'),
-                             duration: const Duration(seconds: 5),),);
-                           Navigator.pop(context);
+                             duration: Duration(seconds: 5),),);
+                           Navigator.push(context,
+                               MaterialPageRoute(builder: (context) => const HomePage()));
                          }
                           });
                         } catch (e, s) {
@@ -155,13 +146,23 @@ class _MakeOrderState extends State<MakeOrder> {
                           print(s);
                         }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text(
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text(
                               'Order can not be completed'),
-                          duration: const Duration(seconds: 5),),);
+                          duration: Duration(seconds: 5),),);
                         Navigator.pop(context);
                       }
-                    }
+                    },
+                    child: data.isLoading == false ? MyText(
+                  'Make Order',
+                    color: white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,)
+                    :  const Center(
+                      child: CircularProgressIndicator(
+                              color: mainBlue,
+                              ),
+                          ),
                   ),
                 ],
               ),

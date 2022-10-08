@@ -11,6 +11,34 @@ import 'dart:io';
 import '../models/pet_model.dart';
 
 class ProviderClass extends ChangeNotifier {
+
+  final TextEditingController _fullnameTextController = TextEditingController();
+  final TextEditingController _passwordTextController = TextEditingController();
+  final TextEditingController _emailTextController = TextEditingController();
+  final TextEditingController _phoneNumberTextController = TextEditingController();
+  final TextEditingController _confirmPasswordTextController = TextEditingController();
+  final TextEditingController _ageTextController = TextEditingController();
+  final TextEditingController _costTextController = TextEditingController();
+  final TextEditingController _isAvailableTextController = TextEditingController();
+  final TextEditingController _breedTextController = TextEditingController();
+
+  final _formkey = GlobalKey<FormState>();
+
+
+  TextEditingController get fullnameTextController => _fullnameTextController;
+  TextEditingController get passwordTextController => _passwordTextController;
+  TextEditingController get emailTextController => _emailTextController;
+  TextEditingController get phoneNumberTextController => _phoneNumberTextController;
+  TextEditingController get confirmPasswordTextController => _confirmPasswordTextController;
+  TextEditingController get ageTextController => _ageTextController;
+  TextEditingController get costTextController => _costTextController;
+  TextEditingController get isAvailableTextController => _isAvailableTextController;
+  TextEditingController get breedTextController => _breedTextController;
+
+
+  GlobalKey<FormState> get formkey => _formkey;
+
+
   String? token;
   String? userEmail;
   var postRegisterResponse;
@@ -26,10 +54,17 @@ class ProviderClass extends ChangeNotifier {
   String? urlDownload;
   bool isLoading = false;
 
+  String? validateConfirmPassword(String? formConfirmPassword) {
+    if (confirmPasswordTextController.text != passwordTextController.text) {
+      return 'Passwords do not match.';
+    }
+
+    return null;
+  }
+
   Future selectFile() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
     if (result == null) return;
-    isLoading = true;
     final path = result.files.single.path!;
     file = File(path);
     notifyListeners();
@@ -42,12 +77,18 @@ class ProviderClass extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> postRegister(Map<String, dynamic> payload) async {
+  Future<void> postRegister() async {
     var url = Uri.parse('https://biggievet.herokuapp.com/api/user/register');
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': '*/*',
     };
+    var payload = {"name": fullnameTextController.text,
+    "phoneNumber": phoneNumberTextController.text,
+    "password": passwordTextController.text,
+    "email": emailTextController.text
+    };
+    notifyListeners();
     try {
        postRegisterResponse = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
       print('Response status: ${postRegisterResponse.statusCode}');
@@ -59,12 +100,18 @@ class ProviderClass extends ChangeNotifier {
     }
   }
 
-  Future<void> postLogin(Map<String, dynamic> payload, String email) async {
+  Future<void> postLogin() async {
     var url = Uri.parse('https://biggievet.herokuapp.com/api/user/login');
     Map<String, String> requestHeaders = {
       'Content-type': 'application/json',
       'Accept': '*/*',
     };
+    var payload = {
+      "password": passwordTextController.text,
+      "email": emailTextController.text
+    };
+    notifyListeners();
+
     try {
       postLoginResponse = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
       print('Response status: ${postLoginResponse.statusCode}');
@@ -74,7 +121,7 @@ class ProviderClass extends ChangeNotifier {
 
       final storage =  await SharedPreferences.getInstance();
       storage.setString('token', responseData['access_token']);
-      storage.setString('email', email);
+      storage.setString('email', emailTextController.text);
 
       print(responseData);
      notifyListeners();
@@ -122,7 +169,7 @@ class ProviderClass extends ChangeNotifier {
 
   }
 
-  Future<void> putUpdate(Map<String, dynamic> payload, String str) async {
+  Future<void> putUpdate(String str) async {
     final storage = await SharedPreferences.getInstance();
     token = await storage.getString('token');
     notifyListeners();
@@ -131,6 +178,12 @@ class ProviderClass extends ChangeNotifier {
       'Content-type': 'application/json',
       'Authorization': 'Bearer $token'
     };
+    var payload = {
+      "age": ageTextController.text,
+       "cost": costTextController.text,
+       "isAvailable": isAvailableTextController.text,
+    };
+    notifyListeners();
 
     var url = Uri.parse('https://biggievet.herokuapp.com/api/pet/update/' + str);
 
@@ -170,26 +223,36 @@ class ProviderClass extends ChangeNotifier {
       print(e);
       print(s);
     }
-
-
   }
 
-  Future<void> postNewPet(Map<String, dynamic> payload,) async {
+  Future<void> postNewPet() async {
     var url = Uri.parse('https://biggievet.herokuapp.com/api/pet/create');
     Map<String, String> requestHeaders = {
-      'Content-type': 'application/json',
       'Accept': '*/*',
       'Authorization': 'Bearer $token'
     };
+
+    var payload = {
+      "age": ageTextController.text,
+      "cost": costTextController.text,
+      "isAvailable": isAvailableTextController.text,
+      'breed': breedTextController.text,
+      'petPicture': file,
+    };
+    // var map = Map<String, dynamic>();
+    // map['age'] = '2 weeks';
+    // map['cost'] = '\$400';
+    // map['isAvailable'] = '3';
+    // map['breed'] = 'test';
+    // map['petPicture'] = file;
+    notifyListeners();
     try {
-      postNewPetResponse = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
+      postNewPetResponse = await http.post(url, headers: requestHeaders, body: json.encode(payload));
       print('Response status: ${postNewPetResponse.statusCode}');
       print('Response body: ${postNewPetResponse.body}');
       notifyListeners();
       var responseData = jsonDecode(postNewPetResponse.body);
-
       print(responseData);
-      notifyListeners();
     } catch (e, s) {
       print(e);
       print(s);

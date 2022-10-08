@@ -35,10 +35,6 @@ class PetDetail extends StatefulWidget {
 
 class _PetDetailState extends State<PetDetail> {
 
-  final TextEditingController _ageTextController = TextEditingController();
-  final TextEditingController _costTextController = TextEditingController();
-  final TextEditingController _isAvailableTextController = TextEditingController();
-  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context);
@@ -137,7 +133,7 @@ class _PetDetailState extends State<PetDetail> {
                   SizedBox(height: 20,),
 
                   InputField(
-                    inputController: _ageTextController,
+                    inputController: data.ageTextController,
                     isPassword: false,
                     hintText: 'New Pet Age',
                     hasSuffixIcon: false,
@@ -146,7 +142,7 @@ class _PetDetailState extends State<PetDetail> {
                   SizedBox(height: 20,),
 
                   InputField(
-                    inputController: _costTextController,
+                    inputController: data.costTextController,
                     isPassword: false,
                     hintText: 'New Pet Price',
                     hasSuffixIcon: false,
@@ -156,7 +152,7 @@ class _PetDetailState extends State<PetDetail> {
                   SizedBox(height: 20,),
 
                   InputField(
-                    inputController: _isAvailableTextController,
+                    inputController: data.isAvailableTextController,
                     isPassword: false,
                     hintText: 'Number of available Pets',
                     hasSuffixIcon: false,
@@ -171,28 +167,27 @@ class _PetDetailState extends State<PetDetail> {
                     height: 50,
                     color: mainred,
                     onTap: ()async {
-                        isLoading = true;
+                      data.isLoading = true;
                         if (mounted)
                           setState(() {});
 
-                        var payload = {
-                          "age": '4 weeks',
-                          //  "cost": '\$400',
-                          // "isAvailable": '10'
-                        };
-
                         Duration waitTime = Duration(seconds: 4);
                         Future.delayed(waitTime, (){
-                          isLoading = false;
+                          data.isLoading = false;
                           if (mounted)
                             setState(() {});
                         });
 
                         try {
-                          await data.putUpdate(payload, widget.sId)
+                          await data.putUpdate(widget.sId)
                             .then((value) {
                               if (data.putResponse.statusCode == 200) {
-                                Navigator.pop(context);
+                                data.ageTextController.clear();
+                                data.costTextController.clear();
+                                data.isAvailableTextController.clear();
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => const HomePage()));
+
                               }else{
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                   content: Text(
@@ -205,7 +200,7 @@ class _PetDetailState extends State<PetDetail> {
                         print(s);
                       }
                     },
-                     child: isLoading == false ? MyText(
+                     child: data.isLoading == false ? MyText(
                     'Update',
                     color: white,
                     fontWeight: FontWeight.w700,

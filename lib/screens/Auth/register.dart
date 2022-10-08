@@ -18,22 +18,6 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final _formkey = GlobalKey<FormState>();
-  bool isLoading = false;
-
-  final TextEditingController _passwordTextController = TextEditingController();
-  final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _fullnameTextController = TextEditingController();
-  final TextEditingController _phoneNumberTextController = TextEditingController();
-  final TextEditingController _confirmPasswordTextController = TextEditingController();
-
-  String? validateConfirmPassword(String? formConfirmPassword) {
-    if (_confirmPasswordTextController.text != _passwordTextController.text) {
-      return 'Passwords do not match.';
-    }
-
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +59,11 @@ class _RegisterState extends State<Register> {
                 ),
 
                 Form(
-                  key: _formkey,
+                  key: data.formkey,
                   child: Column(
                     children:  [
                       InputField(
-                        inputController: _fullnameTextController,
+                        inputController: data.fullnameTextController,
                         isPassword: false,
                         hintText: 'Enter Full Name',
                         hasSuffixIcon: false,
@@ -92,7 +76,7 @@ class _RegisterState extends State<Register> {
                         height: 40,),
 
                       InputField(
-                        inputController: _phoneNumberTextController,
+                        inputController: data.phoneNumberTextController,
                         isPassword: false,
                         hintText: 'Enter Phone Number',
                         hasSuffixIcon: false,
@@ -105,7 +89,7 @@ class _RegisterState extends State<Register> {
                         height: 40,),
 
                       InputField(
-                        inputController: _emailTextController,
+                        inputController: data.emailTextController,
                         isPassword: false,
                         hintText: 'Enter your Email',
                         hasSuffixIcon: false,
@@ -119,26 +103,26 @@ class _RegisterState extends State<Register> {
                       ),
 
                       InputField(
-                        inputController: _passwordTextController,
+                        inputController: data.passwordTextController,
                         isPassword: true,
                         hintText: 'Password',
                         hasSuffixIcon: true,
                         keyBoardType: TextInputType.text,
                         prefixIcon: const Icon(Icons.lock_outlined),
-                        validator: validatePassword1,
+                        validator: validatePassword,
                       ),
                       const SizedBox(
                         height: 40,
                       ),
 
                       InputField(
-                        inputController: _confirmPasswordTextController,
+                        inputController: data.confirmPasswordTextController,
                         isPassword: true,
                         hintText: 'Confirm Password',
                         hasSuffixIcon: true,
                         keyBoardType: TextInputType.text,
                         prefixIcon: const Icon(Icons.lock_outlined),
-                        validator: validateConfirmPassword,
+                        validator: data.validateConfirmPassword,
                       ),
                     ],
                   ),
@@ -151,40 +135,42 @@ class _RegisterState extends State<Register> {
                   child: MyButton(
                       height: 50,
                       color: mainred,
-                      child: isLoading == false ? MyText('Sign Up',
+                      child: data.isLoading == false ? MyText('Sign Up',
                         color: white,
                         fontWeight: FontWeight.w700,
                         fontSize: 20,
-                      ):  const Center(
+                      ):
+                      const Center(
                         child: CircularProgressIndicator(
                           color: mainBlue,
                         ),
                       ),
                       onTap:  () async {
-                        if (_formkey.currentState!.validate()){
-                          isLoading = true;
+                        if (data.formkey.currentState!.validate()){
+                          data.isLoading = true;
                           setState(() {
                           });
 
                           Duration waitTime = const Duration(seconds: 4);
                           Future.delayed(waitTime, (){
                             if (mounted) {
-                              isLoading = false;
+                              data.isLoading = false;
                             }
                             setState(() {});
                           });
 
                           try {
-                            var payload = {"name": _fullnameTextController.text,
-                                            "phoneNumber": _phoneNumberTextController.text,
-                                            "password": _passwordTextController.text,
-                                            "email": _emailTextController.text};
-                            await data.postRegister(payload)
+                            await data.postRegister()
                             .then((value)
                             {
                               if (data.postRegisterResponse.statusCode == 200
                                   || data.postRegisterResponse.statusCode == 201
                               ){
+                                data.fullnameTextController.clear();
+                                data.phoneNumberTextController.clear();
+                                data.passwordTextController.clear();
+                                data.emailTextController.clear();
+
                                 Navigator.pop(context);
                               }else {
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

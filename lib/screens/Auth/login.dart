@@ -24,13 +24,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  TextEditingController _passwordTextController = TextEditingController();
-  TextEditingController _emailTextController = TextEditingController();
-
-  final _formkey = GlobalKey<FormState>();
-
-  bool isLoading = false;
-
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context);
@@ -57,13 +50,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 Form(
-                  key: _formkey,
+                  key: data.formkey,
                   child: Column(
                     children: [
                       const SizedBox(height: 40,),
 
                       InputField(
-                        inputController: _emailTextController,
+                        inputController: data.emailTextController,
                         isPassword: false,
                         hintText: 'Email Address',
                         hasSuffixIcon: false,
@@ -74,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 40,),
 
                       InputField(
-                        inputController: _passwordTextController,
+                        inputController: data.passwordTextController,
                         isPassword: true,
                         hintText: 'Password',
                         hasSuffixIcon: true,
@@ -89,26 +82,25 @@ class _LoginPageState extends State<LoginPage> {
                         height: 50,
                         color: mainred,
                         onTap: () async {
-                          if (_formkey.currentState!.validate()) {
-                            isLoading = true;
+                          if (data.formkey.currentState!.validate()) {
+                            data.isLoading = true;
 
                             setState(() {});
                             Duration waitTime = Duration(seconds: 4);
                             Future.delayed(waitTime, (){
                               if (mounted) {
-                                isLoading = false;
+                                data.isLoading = false;
                               }
                               setState(() {});
                             });
 
                             try {
-                              var payload = {
-                                "password": _passwordTextController.text,
-                                "email": _emailTextController.text};
-
-                              await data.postLogin(payload, _emailTextController.text)
+                              await data.postLogin()
                                   .then((value) {
                                     if (data.postLoginResponse.statusCode == 200){
+                                      data.passwordTextController.clear();
+                                      data.emailTextController.clear();
+
                                     Navigator.push(context,
                                     MaterialPageRoute(builder: (context) => HomePage()));
                                     }else {
@@ -124,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                           }
                         },
-                        child: isLoading == false ? MyText(
+                        child: data.isLoading == false ? MyText(
                           'Log In',
                           color: white,
                           fontWeight: FontWeight.w700,

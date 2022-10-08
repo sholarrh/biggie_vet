@@ -1,7 +1,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../provider/provider.dart';
 import '../utils/app_colors.dart';
@@ -27,7 +26,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var data = Provider.of<ProviderClass>(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -42,7 +40,7 @@ class _HomePageState extends State<HomePage> {
                 fontWeight: FontWeight.bold,
               ),
               Padding(
-                padding: EdgeInsets.only(left: 80),
+                padding: const EdgeInsets.only(left: 80),
                 child: InkWell(
                   child: PopupMenuButton(
                       itemBuilder: (context) => [
@@ -77,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         body:
         SingleChildScrollView(
           child: Column(
-            children: [
+            children: const [
             //   data.getResponse.isEmpty ?
           //   Center(
           //     child: CircularProgressIndicator(

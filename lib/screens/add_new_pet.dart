@@ -8,6 +8,7 @@ import '../utils/app_colors.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_text.dart';
 import '../widgets/my_text_form_field.dart';
+import 'homePage.dart';
 
 class addNewPet extends StatefulWidget {
   const addNewPet({Key? key}) : super(key: key);
@@ -17,12 +18,6 @@ class addNewPet extends StatefulWidget {
 }
 
 class _addNewPetState extends State<addNewPet> {
-
-
-  final TextEditingController _breedTextController = TextEditingController();
-  final TextEditingController _ageTextController = TextEditingController();
-  final TextEditingController _costTextController = TextEditingController();
-  final TextEditingController _isAvailableTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -50,26 +45,26 @@ class _addNewPetState extends State<addNewPet> {
                     height: 40,
                     icon: Icons.attach_file,
                     color: mainred,
+                    onTap: data.selectFile,
                     child: MyText (
                       'Select Pet Image',
                       color: white,
                       fontSize: 18,
                     ),
-                    onTap: data.selectFile,
                   ),
 
                   const SizedBox(height: 8),
 
-                  Text(
+                  MyText(
                     data.file.toString(),
-                    style: TextStyle(fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: mainBlue),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: mainBlue
                   ),
                   const SizedBox(height: 20),
 
                   InputField(
-                    inputController: _breedTextController,
+                    inputController: data.breedTextController,
                     isPassword: false,
                     hintText: 'Pet Breed',
                     hasSuffixIcon: false,
@@ -79,7 +74,7 @@ class _addNewPetState extends State<addNewPet> {
                   const SizedBox(height: 20,),
 
                   InputField(
-                    inputController: _ageTextController,
+                    inputController: data.ageTextController,
                     isPassword: false,
                     hintText: 'Pet Age',
                     hasSuffixIcon: false,
@@ -88,7 +83,7 @@ class _addNewPetState extends State<addNewPet> {
                   SizedBox(height: 20,),
 
                   InputField(
-                    inputController: _costTextController,
+                    inputController: data.costTextController,
                     isPassword: false,
                     hintText: 'Pet Price',
                     hasSuffixIcon: false,
@@ -98,7 +93,7 @@ class _addNewPetState extends State<addNewPet> {
                   SizedBox(height: 20,),
 
                   InputField(
-                    inputController: _isAvailableTextController,
+                    inputController: data.isAvailableTextController,
                     isPassword: false,
                     hintText: 'Number of available Pets',
                     hasSuffixIcon: false,
@@ -117,14 +112,6 @@ class _addNewPetState extends State<addNewPet> {
                         if (mounted)
                           setState(() {});
 
-                        var payload = {
-                          "age": '4 weeks',
-                            "cost": '\$400',
-                           "isAvailable": '10',
-                          'breed': 'Doberman',
-                          'petPicture': data.file,
-                        };
-
                         Duration waitTime = Duration(seconds: 4);
                         Future.delayed(waitTime, (){
                           data.isLoading = false;
@@ -132,8 +119,9 @@ class _addNewPetState extends State<addNewPet> {
                             setState(() {});
                           }
                         });
+
                         try{
-                          await data.postNewPet(payload)
+                          await data.postNewPet()
                               .then((value) {
                             if (data.postNewPetResponse.statusCode == 200 ||
                                 data.postNewPetResponse.statusCode == 201) {
@@ -141,7 +129,14 @@ class _addNewPetState extends State<addNewPet> {
                                 content: Text(
                                     'Pet has been Added'),
                                 duration: Duration(seconds: 5),),);
-                              Navigator.pop(context);
+                              data.ageTextController.clear();
+                              data.costTextController.clear();
+                              data.isAvailableTextController.clear();
+                              data.breedTextController.clear();
+
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => const HomePage()));
+
                             }else{
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                 content: Text(
