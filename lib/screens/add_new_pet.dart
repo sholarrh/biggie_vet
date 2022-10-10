@@ -27,9 +27,9 @@ class _addNewPetState extends State<addNewPet> {
       appBar: AppBar(
         backgroundColor: mainBlue,
         automaticallyImplyLeading: true,
-        title: Text('Add New Pet',
+        title: const Text('Add New Pet',
           style: TextStyle(
-            color: mainred,
+            color: white,
           ),),
         centerTitle: true,
       ),
@@ -40,7 +40,7 @@ class _addNewPetState extends State<addNewPet> {
             child: Center(
               child: Column(
                 children: [
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
                   MyButton(
                     height: 40,
                     icon: Icons.attach_file,
@@ -56,10 +56,10 @@ class _addNewPetState extends State<addNewPet> {
                   const SizedBox(height: 8),
 
                   MyText(
-                    data.file.toString(),
+                    data.file == null ? 'No File Selected' : data.file.toString(),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: mainBlue
+                      color: mainBlue,
                   ),
                   const SizedBox(height: 20),
 
@@ -80,7 +80,7 @@ class _addNewPetState extends State<addNewPet> {
                     hasSuffixIcon: false,
                     keyBoardType: TextInputType.text,
                   ),
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
 
                   InputField(
                     inputController: data.costTextController,
@@ -90,7 +90,7 @@ class _addNewPetState extends State<addNewPet> {
                     keyBoardType: TextInputType.text,
 
                   ),
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
 
                   InputField(
                     inputController: data.isAvailableTextController,
@@ -109,10 +109,11 @@ class _addNewPetState extends State<addNewPet> {
                       icon: Icons.cloud_upload_outlined,
                       onTap: () async {
                         data.isLoading = true;
-                        if (mounted)
+                        if (mounted) {
                           setState(() {});
+                        }
 
-                        Duration waitTime = Duration(seconds: 4);
+                        Duration waitTime = const Duration(seconds: 4);
                         Future.delayed(waitTime, (){
                           data.isLoading = false;
                           if (mounted) {
@@ -123,8 +124,7 @@ class _addNewPetState extends State<addNewPet> {
                         try{
                           await data.postNewPet()
                               .then((value) {
-                            if (data.postNewPetResponse.statusCode == 200 ||
-                                data.postNewPetResponse.statusCode == 201) {
+                            if (data.error == false) {
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                 content: Text(
                                     'Pet has been Added'),
@@ -133,6 +133,7 @@ class _addNewPetState extends State<addNewPet> {
                               data.costTextController.clear();
                               data.isAvailableTextController.clear();
                               data.breedTextController.clear();
+                              //data.file!.clear();
 
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) => const HomePage()));

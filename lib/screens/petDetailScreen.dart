@@ -51,63 +51,67 @@ class _PetDetailState extends State<PetDetail> {
               ),
 
               MyText(widget.breed,
-                color: mainred,
+                color: white,
                 fontSize: 27,
                 fontWeight: FontWeight.w600,
               ),
 
               InkWell(
                 child: PopupMenuButton(
-                  color: mainBlue,
+                  color: white,
                   itemBuilder: (context) => [
                     PopupMenuItem(
-                      child: Expanded(
-                        child: AlertDialog(
-                          title: MyText(
-                            'Delete ?',
-                            color: mainred,
-                            fontSize: 20,
-                          ),
-                          content: MyText(
-                            'Do you want to delete this pet?',
-                            color: white,
-                            fontSize: 14,
-                          ),
-                          actions: [
-                            ElevatedButton(
-                              onPressed:  ()async {
-                                try {
-                                  await data.delete(widget.sId)
-                                      .then((value) {
-                                        widget.isAvailable = widget.isAvailable - 1;
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (ctx) => HomePage()));
-                                  });
-                                } catch (e, s) {
-                                  print(e);
-                                  print(s);
-                                }
-                              },
-                              child: MyText(
-                                'Yes',
-                                color: white,
-                                fontSize: 14,
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: (){
-                                Navigator.pop(context);
-                              },
-                              child:  MyText(
-                                'No',
-                                color: white,
-                                fontSize: 14,
-                              ),
-                            )
-                          ],
-                          backgroundColor: mainBlue,
+                      child: AlertDialog(
+                        title: MyText(
+                          'Delete ?',
+                          color: mainred,
+                          fontSize: 20,
                         ),
+                        content: MyText(
+                          'Do you want to delete this pet?',
+                          color: mainBlue,
+                          fontSize: 14,
+                        ),
+                        actions: [
+                          ElevatedButton(
+
+                            onPressed:  ()async {
+                              try {
+                                await data.delete(widget.sId)
+                                    .then((value) {
+                                      widget.isAvailable = widget.isAvailable - 1;
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (ctx) => HomePage()));
+                                });
+                              } catch (e, s) {
+                                print(e);
+                                print(s);
+                              }
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.white),
+                            ),
+                            child: MyText(
+                              'Yes',
+                              color: mainBlue,
+                              fontSize: 14,
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: (){
+                              Navigator.pop(context);
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.white),),
+                            child:  MyText(
+                              'No',
+                              color: mainBlue,
+                              fontSize: 14,
+                            ),
+                          )
+                        ],
+                        backgroundColor: white,
                       ),
                     ),
                   ],
@@ -185,9 +189,7 @@ class _PetDetailState extends State<PetDetail> {
                                 data.ageTextController.clear();
                                 data.costTextController.clear();
                                 data.isAvailableTextController.clear();
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => const HomePage()));
-
+                                Navigator.pop(context,);
                               }else{
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                   content: Text(
@@ -220,3 +222,7 @@ class _PetDetailState extends State<PetDetail> {
     );
   }
 }
+
+
+
+

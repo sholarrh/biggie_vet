@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,6 @@ class ProviderClass extends ChangeNotifier {
 
   final _formkey = GlobalKey<FormState>();
 
-
   TextEditingController get fullnameTextController => _fullnameTextController;
   TextEditingController get passwordTextController => _passwordTextController;
   TextEditingController get emailTextController => _emailTextController;
@@ -35,9 +35,7 @@ class ProviderClass extends ChangeNotifier {
   TextEditingController get isAvailableTextController => _isAvailableTextController;
   TextEditingController get breedTextController => _breedTextController;
 
-
   GlobalKey<FormState> get formkey => _formkey;
-
 
   String? token;
   String? userEmail;
@@ -48,6 +46,14 @@ class ProviderClass extends ChangeNotifier {
   var putResponse;
   var putOrderResponse;
   var postNewPetResponse;
+  var responsedata;
+
+
+  bool _error = false;
+  String _errorMessage = '';
+
+  bool get error => _error;
+  String get errorMessage => _errorMessage;
 
 
   File? file;
@@ -88,16 +94,15 @@ class ProviderClass extends ChangeNotifier {
     "password": passwordTextController.text,
     "email": emailTextController.text
     };
-    notifyListeners();
     try {
        postRegisterResponse = await http.post(url, headers: requestHeaders, body: jsonEncode(payload));
       print('Response status: ${postRegisterResponse.statusCode}');
       print('Response body: ${postRegisterResponse.body}');
-      notifyListeners();
     } catch (e, s) {
       print(e);
       print(s);
     }
+    notifyListeners();
   }
 
   Future<void> postLogin() async {
@@ -143,14 +148,34 @@ class ProviderClass extends ChangeNotifier {
     };
     var url =Uri.parse('https://biggievet.herokuapp.com/api/user/pets');
     getResponse = await http.get(url, headers: requestHeaders);
-    print('Response status: ${getResponse.statusCode}');
-    print(jsonDecode(getResponse.body));
 
-    var responsedata = getCLassModelFromJson(getResponse.body);
-    print(responsedata.data!);
+    print('Response status: ${getResponse.statusCode}');
+
+
+    if (getResponse.statusCode == 200){
+      try{
+        responsedata = getCLassModelFromJson(getResponse.body);
+        print(responsedata.data!);
+        _error = false;
+      } catch(e){
+        _error = true;
+        _errorMessage = e.toString();
+
+      }
+    }else{
+      _error = true;
+      _errorMessage = 'It could be your Internet Connection';
+
+    }
     notifyListeners();
     return responsedata;
+  }
 
+  void initialValues() {
+    _error = false;
+    _errorMessage = '';
+    responsedata = {};
+    notifyListeners();
   }
 
   Future<void> delete(String str) async {
@@ -226,36 +251,62 @@ class ProviderClass extends ChangeNotifier {
   }
 
   Future<void> postNewPet() async {
-    var url = Uri.parse('https://biggievet.herokuapp.com/api/pet/create');
-    Map<String, String> requestHeaders = {
-      'Accept': '*/*',
-      'Authorization': 'Bearer $token'
-    };
 
-    var payload = {
-      "age": ageTextController.text,
-      "cost": costTextController.text,
-      "isAvailable": isAvailableTextController.text,
-      'breed': breedTextController.text,
-      'petPicture': file,
+    var headers = {
+      'Authorization': 'Bearer $token',
+      //'Cookie': 'access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzM2MxZDgzYzVkNDk5YjdmMDQyMDE4ZSIsImlhdCI6MTY2NTQwMjc3MCwiZXhwIjoxNjY1NDA2MzcwfQ.SemHi6DFjF5pwajO9fdfteLRX_SgxDZYDICIVk3dUxk'
     };
-    // var map = Map<String, dynamic>();
-    // map['age'] = '2 weeks';
-    // map['cost'] = '\$400';
-    // map['isAvailable'] = '3';
-    // map['breed'] = 'test';
-    // map['petPicture'] = file;
-    notifyListeners();
+    postNewPetResponse = http.MultipartRequest('POST', Uri.parse('https://biggievet.herokuapp.com/api/pet/create'));
+    postNewPetResponse.fields.addAll({
+      'age': ageTextController.text,
+      'isAvailable': isAvailableTextController.text,
+      'cost': costTextController.text,
+      'breed': breedTextController.text,
+    });
+    postNewPetResponse.files.add(await http.MultipartFile.fromPath('petPicture',file!.path));
+    postNewPetResponse.headers.addAll(headers);
+
     try {
-      postNewPetResponse = await http.post(url, headers: requestHeaders, body: json.encode(payload));
-      print('Response status: ${postNewPetResponse.statusCode}');
-      print('Response body: ${postNewPetResponse.body}');
-      notifyListeners();
-      var responseData = jsonDecode(postNewPetResponse.body);
-      print(responseData);
-    } catch (e, s) {
+      http.StreamedResponse response = await postNewPetResponse.send();
+      if (response.statusCode == 200) {
+        print(await response.stream.bytesToString());
+        error == false;
+      }
+      else {
+        print(response.reasonPhrase);
+      }
+    }catch(e){
       print(e);
-      print(s);
     }
+
+    // var mapData = {
+    //   "age": ageTextController.text,
+    //   "cost": costTextController.text,
+    //   "isAvailable": isAvailableTextController.text,
+    //   'breed': breedTextController.text,
+    // };
+
+    // FormData data = FormData.fromMap(mapData);
+    // data.files.add(
+    //   MapEntry(
+    //       'petPicture',
+    //     MultipartFile.fromFileSync(imageFile.path,
+    //       filename: imageFile.path.split('/').last
+    //     )
+    //   ),
+    // );
+
+
+    // try {
+    //   postNewPetResponse = await http.post(url, headers: requestHeaders, body: json.encode(mapData));
+    //   print('Response status: ${postNewPetResponse.statusCode}');
+    //   print('Response body: ${postNewPetResponse.body}');
+    //   notifyListeners();
+    //   var responseData = jsonDecode(postNewPetResponse.body);
+    //   print(responseData);
+    // } catch (e, s) {
+    //   print(e);
+    //   print(s);
+    // }
   }
 }

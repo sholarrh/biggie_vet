@@ -1,5 +1,5 @@
 import 'package:biggie_vet/provider/provider.dart';
-import 'package:biggie_vet/screens/Auth/login.dart';
+import 'package:biggie_vet/screens/onboarding/splash.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home:  LoginPage(),
+        home:  SplashScreen(),
       ),
     );
   }

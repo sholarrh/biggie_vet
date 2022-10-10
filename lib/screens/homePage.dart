@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../provider/provider.dart';
 import '../utils/app_colors.dart';
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<ProviderClass>(context,);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -55,7 +57,9 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Text('User')
                               ],
-                            )),
+                            )
+                        ),
+
                         PopupMenuItem(
                             child: InkWell(
                                 onTap: () {
@@ -65,23 +69,29 @@ class _HomePageState extends State<HomePage> {
                                           builder: (context) => const addNewPet()));
                                 },
                                 child: const Text('Add New Pet'))),
+
+                        PopupMenuItem(
+                            child: IconButton(
+                              icon: Icon(Icons.refresh,
+                              color: Colors.black,
+                              ),
+                              onPressed: () async {
+                                data.initialValues();
+                                await data.get();
+                              },
+                            ),
+                        ),
                       ]),
                 ),
               ),
             ],
           ),
         ),
-        backgroundColor: Colors.cyan,
+        backgroundColor: Colors.grey,
         body:
         SingleChildScrollView(
           child: Column(
             children: const [
-            //   data.getResponse.isEmpty ?
-          //   Center(
-          //     child: CircularProgressIndicator(
-          //     color: mainBlue,
-          // ),
-          // ):
               AllPets(),
             ],
           ),

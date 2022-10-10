@@ -16,46 +16,81 @@ class AllPets extends StatefulWidget {
 }
 
 class _AllPetsState extends State<AllPets> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ProviderClass().get();
+  }
+  
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: double.infinity,
-      child: FutureBuilder(
-          future: ProviderClass().get(),
-          builder: (context, snapshot) {
-            return ListView.builder(
-              itemCount: snapshot.data!.data!.length,
-              itemBuilder: (context, index) {
-                final apidata = snapshot.data!.data!;
-                print(apidata);
-                if (snapshot.hasData) {
-                  if (snapshot.hasError){
-                    return Center(
-                      child: Container(
-                        child: Text(
-                            'There is an error'
-                        ),
-                      ),
+    var data = Provider.of<ProviderClass>(context,);
+    return RefreshIndicator(
+      onRefresh: ()async{
+        await data.get();
+      },
+      child: Center(
+        child: Consumer<ProviderClass>(
+          builder: (ctx, value, child) {
+            return  Container(
+                   height: MediaQuery.of(context).size.height,
+                  width: double.infinity,
+                  child: FutureBuilder(
+                  future: ProviderClass().get(),
+                  builder: (context, snapshot) {
+                    return !snapshot.hasData && !snapshot.hasError ?
+                        const Center(
+                          child: SizedBox(
+                              height: 50,
+                            width: 50,
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.green),
+                              ),
+                          ),
+                        )
+                    : snapshot.hasError ?
+                    Text('Something went wrong ',textAlign: TextAlign.center,)
+                      : ListView.builder(
+                      itemCount: snapshot.data!.data!.length,
+                      itemBuilder: (context, index) {
+                        final apidata = snapshot.data!.data!;
+                        print(apidata);
+                          return PetCard(
+                              sId: apidata[index].sId!.toString(),
+                              breed: apidata[index].breed!.toString(),
+                              age: apidata[index].age!.toString(),
+                              isAvailable: apidata[index].isAvailable!,
+                              petPicture: apidata[index].petPicture!.toString(),
+                              cost: apidata[index].cost!.toString()
+                          );
+                      },
                     );
                   }
-                  return PetCard(
-                      sId: apidata[index].sId!.toString(),
-                      breed: apidata[index].breed!.toString(),
-                      age: apidata[index].age!.toString(),
-                      isAvailable: apidata[index].isAvailable!,
-                      petPicture: apidata[index].petPicture!.toString(),
-                      cost: apidata[index].cost!.toString()
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+              ),
             );
-          }
+          },
+        ),
       ),
     );
   }
 }
+
+
+
+
+// ListView.builder(
+// itemCount: value.map['data'].length,
+// itemBuilder: (ctx, i) {
+// return PetCard(
+// sId: value.map[i].sId!.toString(),
+// breed: value.map[i].breed!.toString(),
+// age: value.map[i].age!.toString(),
+// isAvailable:value.map[i].isAvailable!,
+// petPicture: value.map[i].petPicture!.toString(),
+// cost: value.map[i].cost!.toString()
+// );
+// }
+// );

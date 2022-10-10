@@ -28,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.black26,
       body:  SingleChildScrollView(
         child: SafeArea(
