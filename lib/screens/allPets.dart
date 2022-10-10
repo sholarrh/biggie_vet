@@ -47,7 +47,7 @@ class _AllPetsState extends State<AllPets> {
                             width: 50,
                               child: CircularProgressIndicator(
                                 valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.green),
+                                AlwaysStoppedAnimation<Color>(Colors.blue),
                               ),
                           ),
                         )

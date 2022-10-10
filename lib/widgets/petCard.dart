@@ -45,6 +45,7 @@ class _PetCardState extends State<PetCard> {
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context,);
     return Card(
+      color: Colors.white.withOpacity(0.2),
       child: Column(
         children: [
           Container(
@@ -91,7 +92,7 @@ class _PetCardState extends State<PetCard> {
           Container(
             padding: EdgeInsets.all(10),
             width: double.infinity,
-            child: MyText(widget.age,
+            child: MyText('Age: ${widget.age}',
               fontSize: 22,
               textAlign: TextAlign.start,
               color: Colors.blueAccent,
@@ -99,9 +100,9 @@ class _PetCardState extends State<PetCard> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             width: double.infinity,
-            child: MyText(widget.cost,
+            child: MyText('Price: ${widget.cost}',
               fontSize: 22,
               textAlign: TextAlign.start,
               color: Colors.blueAccent,

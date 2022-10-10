@@ -206,6 +206,7 @@ class ProviderClass extends ChangeNotifier {
     var payload = {
       "age": ageTextController.text,
        "cost": costTextController.text,
+      "breed": breedTextController.text,
        "isAvailable": isAvailableTextController.text,
     };
     notifyListeners();

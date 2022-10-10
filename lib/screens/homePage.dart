@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.black,
         body:
         SingleChildScrollView(
           child: Column(

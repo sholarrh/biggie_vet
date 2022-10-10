@@ -135,9 +135,7 @@ class _addNewPetState extends State<addNewPet> {
                               data.breedTextController.clear();
                               //data.file!.clear();
 
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => const HomePage()));
-
+                              Navigator.pop(context,);
                             }else{
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                 content: Text(

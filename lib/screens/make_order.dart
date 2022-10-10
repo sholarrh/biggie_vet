@@ -137,8 +137,7 @@ class _MakeOrderState extends State<MakeOrder> {
                              content: Text(
                                  'Purchase Completed'),
                              duration: Duration(seconds: 5),),);
-                           Navigator.push(context,
-                               MaterialPageRoute(builder: (context) => const HomePage()));
+                           Navigator.pop(context);
                          }
                           });
                         } catch (e, s) {

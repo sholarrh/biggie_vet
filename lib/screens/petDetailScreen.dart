@@ -80,9 +80,13 @@ class _PetDetailState extends State<PetDetail> {
                                 await data.delete(widget.sId)
                                     .then((value) {
                                       widget.isAvailable = widget.isAvailable - 1;
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (ctx) => HomePage()));
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => HomePage()
+                                          ),
+                                            (route) => false,
+                                      );
                                 });
                               } catch (e, s) {
                                 print(e);
@@ -132,6 +136,16 @@ class _PetDetailState extends State<PetDetail> {
                     child: Image.network(widget.petPicture,
                       fit: BoxFit.fill,
                     ),
+                  ),
+
+                  SizedBox(height: 20,),
+
+                  InputField(
+                    inputController: data.breedTextController,
+                    isPassword: false,
+                    hintText: 'New Pet Breed',
+                    hasSuffixIcon: false,
+                    keyBoardType: TextInputType.text,
                   ),
 
                   SizedBox(height: 20,),
@@ -188,6 +202,7 @@ class _PetDetailState extends State<PetDetail> {
                               if (data.putResponse.statusCode == 200) {
                                 data.ageTextController.clear();
                                 data.costTextController.clear();
+                                data.breedTextController.clear();
                                 data.isAvailableTextController.clear();
                                 Navigator.pop(context,);
                               }else{
