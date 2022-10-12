@@ -109,6 +109,7 @@ class _PetCardState extends State<PetCard> {
               fontWeight: FontWeight.w400,
             ),
           ),
+
         ],
       ),
     );

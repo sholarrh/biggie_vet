@@ -52,22 +52,32 @@ class _AllPetsState extends State<AllPets> {
                           ),
                         )
                     : snapshot.hasError ?
-                    Text('Something went wrong ',textAlign: TextAlign.center,)
-                      : ListView.builder(
-                      itemCount: snapshot.data!.data!.length,
-                      itemBuilder: (context, index) {
-                        final apidata = snapshot.data!.data!;
-                        print(apidata);
-                          return PetCard(
-                              sId: apidata[index].sId!.toString(),
-                              breed: apidata[index].breed!.toString(),
-                              age: apidata[index].age!.toString(),
-                              isAvailable: apidata[index].isAvailable!,
-                              petPicture: apidata[index].petPicture!.toString(),
-                              cost: apidata[index].cost!.toString()
-                          );
-                      },
-                    );
+                    const Text('Something went wrong ',textAlign: TextAlign.center,)
+                      : Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                            reverse: true,
+                            itemCount: snapshot.data!.data!.length,
+                            itemBuilder: (context, index) {
+                              final apidata = snapshot.data!.data!;
+                              print(apidata);
+                                return PetCard(
+                                    sId: apidata[index].sId!.toString(),
+                                    breed: apidata[index].breed!.toString(),
+                                    age: apidata[index].age!.toString(),
+                                    isAvailable: apidata[index].isAvailable!,
+                                    petPicture: apidata[index].petPicture!.toString(),
+                                    cost: apidata[index].cost!.toString()
+                                );
+                            },
+                    ),
+                          ),
+                          const SizedBox(
+                            height: 80,
+                          ),
+                        ],
+                      );
                   }
               ),
             );
