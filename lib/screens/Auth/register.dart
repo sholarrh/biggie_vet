@@ -19,6 +19,8 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context);
@@ -59,7 +61,8 @@ class _RegisterState extends State<Register> {
                 ),
 
                 Form(
-                  key: data.formkey,
+                  key:
+                  _formKey,
                   child: Column(
                     children:  [
                       InputField(
@@ -146,7 +149,7 @@ class _RegisterState extends State<Register> {
                         ),
                       ),
                       onTap:  () async {
-                        if (data.formkey.currentState!.validate()){
+                        if (_formKey.currentState!.validate()){
                           data.isLoading = true;
                           setState(() {
                           });

@@ -1,15 +1,15 @@
 
 import 'dart:convert';
 
-pet_model getCLassModelFromJson(String str) => pet_model.fromJson(json.decode(str));
+PetModel getCLassModelFromJson(String str) => PetModel.fromJson(json.decode(str));
 
-class pet_model {
+class PetModel {
   int? count;
   List<Data>? data;
 
-  pet_model({this.count, this.data});
+  PetModel({this.count, this.data});
 
-  pet_model.fromJson(Map<String, dynamic> json) {
+  PetModel.fromJson(Map<String, dynamic> json) {
     count = json['count'];
     if (json['data'] != null) {
       data = <Data>[];

@@ -24,6 +24,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     var data = Provider.of<ProviderClass>(context);
@@ -51,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 Form(
-                  key: data.formkey,
+                  key: _formKey,
                   child: Column(
                     children: [
                       const SizedBox(height: 40,),
@@ -65,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                         prefixIcon: const Icon(Icons.person_outline),
                         validator: validateEmail,),
 
-                      SizedBox(height: 40,),
+                      const SizedBox(height: 40,),
 
                       InputField(
                         inputController: data.passwordTextController,
@@ -77,17 +79,17 @@ class _LoginPageState extends State<LoginPage> {
                         validator: validatePassword,
                       ),
 
-                      SizedBox(height: 150,),
+                      const SizedBox(height: 150,),
 
                       MyButton(
                         height: 50,
                         color: mainred,
                         onTap: () async {
-                          if (data.formkey.currentState!.validate()) {
+                          if (_formKey.currentState!.validate()) {
                             data.isLoading = true;
 
                             setState(() {});
-                            Duration waitTime = Duration(seconds: 4);
+                            Duration waitTime = const Duration(seconds: 4);
                             Future.delayed(waitTime, (){
                               if (mounted) {
                                 data.isLoading = false;
@@ -103,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                                       data.emailTextController.clear();
 
                                     Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => HomePage()));
+                                    MaterialPageRoute(builder: (context) => const HomePage()));
                                     }else {
                                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                         content: Text(

@@ -23,7 +23,7 @@ class ProviderClass extends ChangeNotifier {
   final TextEditingController _isAvailableTextController = TextEditingController();
   final TextEditingController _breedTextController = TextEditingController();
 
-  final _formkey = GlobalKey<FormState>();
+
 
   TextEditingController get fullnameTextController => _fullnameTextController;
   TextEditingController get passwordTextController => _passwordTextController;
@@ -35,7 +35,7 @@ class ProviderClass extends ChangeNotifier {
   TextEditingController get isAvailableTextController => _isAvailableTextController;
   TextEditingController get breedTextController => _breedTextController;
 
-  GlobalKey<FormState> get formkey => _formkey;
+ // GlobalKey<FormState> get formkey => _formkey;
 
   String? token;
   String? userEmail;
@@ -136,8 +136,8 @@ class ProviderClass extends ChangeNotifier {
     }
   }
 
-  //run shared preference before any app that needs token
-  Future<pet_model> get() async {
+  // run shared preference before any app that needs token
+  Future<PetModel> get() async {
     final storage = await SharedPreferences.getInstance();
     token = await storage.getString('token');
     notifyListeners();
@@ -146,7 +146,7 @@ class ProviderClass extends ChangeNotifier {
       'Accept': '*/*',
       'Authorization': 'Bearer $token'
     };
-    var url =Uri.parse('https://biggievet.herokuapp.com/api/user/pets');
+    var url =Uri.parse('https://compact-pay.herokuapp.com/api/users/pets');
     getResponse = await http.get(url, headers: requestHeaders);
 
     print('Response status: ${getResponse.statusCode}');
